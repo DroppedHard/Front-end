@@ -1,0 +1,501 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body{
+            font-family: 'Roboto', sans-serif;
+            background:lightblue;
+        }
+        body::before {
+            opacity: 0.05;
+            font-size:10em;
+            content:"SAPER";
+            transform:translate(50%,0);
+            position:absolute;
+            top:10px;
+            right:10px;
+            animation-name:example;
+            animation-duration:10s;
+            animation-iteration-count:infinite;
+            animation-timing-function: linear;
+        }
+        @keyframes example {
+            0% {
+                right:100px;
+                transform: rotate(0deg);
+            }
+            50%{
+                left:100px;
+                transform: rotate(720deg);
+            }
+            100% {
+                right:100px;
+                transform: rotate(0deg);
+            }
+        }
+        #menu {
+            position: absolute;
+            left: 50%;
+            display: flex;
+            align-content: center;
+            flex-flow: column;
+            transform:translate(-50%,0);
+            border:5px solid gray;
+            background:lightgray;
+            border-radius: 5px;
+        }
+
+        #menu input {
+            width: 30px;
+            margin-left: 10px;
+        }
+
+        #menu div {
+            display: flex;
+            justify-content: space-between;
+        }
+		#saper {
+			position:absolute;
+			transform:translate(-50%,0);
+			left:50%;
+			top:200px;
+            margin-bottom: 20px;
+		}
+
+        .numer1 {
+            color:blue;
+        }
+        .numer2 {
+            color:green;
+        }
+        .numer3 {
+            color:red;
+        }
+        .numer4 {
+            color:darkblue;
+        }
+        .numer5 {
+            color:brown;
+        }
+        .numer6 {
+            color:blueviolet;
+        }
+        .numer7 {
+            color:crimson;
+        }
+        .numer8 {
+            color:black;
+        }
+        #wynik {
+            position: absolute;
+            left:110px;
+            width:150px;
+            transform:translate(-50%,0);
+            background:lightslategrey;
+            border: gray 10px solid;
+            border-radius: 10px;
+            text-align: center;
+        }
+        #wynik span {
+            font-weight: bolder;
+            font-size:large;
+        }
+        #licznik {
+            position: absolute;
+            right:10%;
+            transform:translate(50%,0);
+        }
+        .tlo {
+            
+        }
+    </style>
+</head>
+
+<body>
+
+    <script>
+        var tabela = []
+        var wiersz=[]
+        var poka = function(poleX, poleY) {
+            var element = document.getElementById((poleX)+";"+(poleY))
+            if (element.style.width == "16px"&&tabela[poleY][poleX] != 1) {
+                element.click()
+            }
+        }
+        var plansza = function(wys, szer, bomb) {
+			var wygrana=0
+            var przegrana=false
+			var flagi=0
+            tabela=[]
+			if (!document.getElementById("saper")==null) {
+				document.getElementById("saper").remove()
+			}
+			var bomby = parseInt(bomb)
+            for (var i=0; i<wys; i++) {
+                tabela[i]=[]
+                    for (var j=0;j<szer;j++) {
+                        tabela[i][j]=0
+                    }
+            }
+
+            var b=0;
+            do{
+                var i=Math.floor(Math.random()*szer)
+                var j=Math.floor(Math.random()*wys)
+                if(tabela[j][i]==0){
+                    tabela[j][i]=1;
+                    b++
+                }
+            }while(b<bomby)
+			var saper = document.createElement("div")
+			saper.id="saper"
+			saper.style.width = (szer*20)+"px"
+			saper.style.height = (wys*20)+"px"
+			for (var i=0; i<wys; i++) {
+                for (var j=0;j<szer;j++) {
+					var pole = document.createElement("div")
+					pole.style.backgroundColor = "#c0c0c0"
+					pole.style.width = 16+"px"
+					pole.style.height = 16+"px"
+					pole.style.border = "lightgray 2px outset"
+                    pole.style.position = "absolute"
+                    pole.style.textAlign = "center"
+                    pole.style.fontFamily = "Roboto"
+                    pole.style.fontWeight = "bolder"
+					pole.style.top = (i*20)+"px"
+                    pole.style.left = (j * 20) + "px"
+                    pole.id = +j+";"+i
+                    pole.onclick = function () {
+                        if (this.style.background=="") {
+                            this.style.border = "1px solid gray"
+                            this.style.width = 18+"px"
+                            this.style.height = 18+"px"
+                            var poleX = parseInt(this.style.left) / 20
+                            var poleY = parseInt(this.style.top) / 20
+                            if (tabela[poleY][poleX] == 1) { 
+                                if (przegrana==false){
+                                    przegrana=true
+                                    this.style.background = "url(img/bomb.png) center center / cover no-repeat"
+                                }
+                                else {
+                                    this.style.background = "url(img/pbomb.png) center center / cover no-repeat"
+                                }
+                                setTimeout(function() {
+                                for (var i=0; i<wys; i++) {
+                                        for (var j=0;j<szer;j++) {
+                                            if (tabela[i][j]==1){
+                                                    console.log(j, i, document.getElementById(j+";"+i))
+                                                    document.getElementById(j+";"+i).click()
+                                            }
+                                        }
+                                }
+                                },1)
+                            }
+                            else if (tabela[poleY][poleX] == 0) {
+                                this.style.background = "#c0c0c0"
+                                let obok=0
+                                //obsługa rogów
+                                if (poleX==0 && poleY==0) {
+                                    obok += tabela[poleY+1][poleX+1] + tabela[poleY][poleX+1] + tabela[poleY+1][poleX]
+                                    //console.log("liczr 00")
+                                    if (obok==0) {
+                                        setTimeout(function() {
+                                            poka(poleX+1, poleY+1)
+                                            poka(poleX+1, poleY)
+                                            poka(poleX, poleY+1)
+                                        },1)
+                                    }
+                                }
+                                else if (poleX==0 && poleY==wys-1) {
+                                    obok += tabela[poleY-1][poleX] + tabela[poleY-1][poleX+1] + tabela[poleY][poleX+1]
+                                    //console.log("liczr 0max")
+                                    if (obok==0) {
+                                        setTimeout(function() {
+                                            poka(poleX, poleY-1)
+                                            poka(poleX+1, poleY-1)
+                                            poka(poleX+1, poleY)
+                                        },1)
+                                    }
+                                }
+                                else if (poleX==szer-1 && poleY==wys-1) {
+                                    obok += tabela[poleY][poleX-1] + tabela[poleY-1][poleX-1] + tabela[poleY-1][poleX]
+                                    //console.log("liczr maxmax")
+                                    if (obok==0) {
+                                        setTimeout(function() {
+                                            poka(poleX-1, poleY-1)
+                                            poka(poleX-1, poleY)
+                                            poka(poleX, poleY-1)
+                                        },1)
+                                    }
+                                }
+                                else if (poleX==szer-1 && poleY==0) {
+                                    obok += tabela[poleY+1][poleX] + tabela[poleY+1][poleX-1] + tabela[poleY][poleX-1]
+                                    //console.log("liczr max0")
+                                    if (obok==0) {
+                                        setTimeout(function() {
+                                            poka(poleX, poleY+1)
+                                            poka(poleX-1, poleY+1)
+                                            poka(poleX-1, poleY)
+                                        },1)
+                                    }
+                                }
+                                //obsługa krawędzi
+                                else if (poleX==0 && poleY!=0 && poleY!=wys-1) {
+                                    obok += tabela[poleY-1][poleX] + tabela[poleY-1][poleX+1] + tabela[poleY][poleX+1] + tabela[poleY+1][poleX+1] + tabela[poleY+1][poleX]
+                                    //console.log("liczs 0y")
+                                    if (obok==0) {
+                                        setTimeout(function() {
+                                        poka(poleX, poleY-1)
+                                        poka(poleX+1, poleY-1)
+                                        poka(poleX+1, poleY)
+                                        poka(poleX+1, poleY+1)
+                                        poka(poleX, poleY+1)
+                                        },1)
+                                    }
+                                }
+                                else if (poleY==0 && poleX!=0 && poleX!=szer-1) {
+                                    obok += tabela[poleY][poleX+1] + tabela[poleY+1][poleX+1] + tabela[poleY+1][poleX] + tabela[poleY+1][poleX-1] + tabela[poleY][poleX-1]
+                                    //console.log("liczs x0")
+                                    if (obok==0) {
+                                        setTimeout(function() {
+                                            poka(poleX+1, poleY)
+                                            poka(poleX+1, poleY+1)
+                                            poka(poleX, poleY+1)
+                                            poka(poleX-1, poleY+1)
+                                            poka(poleX-1, poleY)
+                                        },1)
+                                    }
+                                }
+                                else if (poleX==szer-1 && poleY!=0 && poleY!=wys-1) {
+                                    obok += tabela[poleY+1][poleX] + tabela[poleY+1][poleX-1] + tabela[poleY][poleX-1] + tabela[poleY-1][poleX-1] + tabela[poleY-1][poleX]
+                                // console.log("liczs maxy")
+                                    if (obok==0) {
+                                        setTimeout(function() { 
+                                            poka(poleX, poleY+1)
+                                            poka(poleX-1, poleY+1)
+                                            poka(poleX-1, poleY)
+                                            poka(poleX-1, poleY-1)
+                                            poka(poleX, poleY-1)
+                                        },1)
+                                    }
+                                }
+                            else if (poleY==wys-1 && poleX!=0 && poleX!=szer-1) {
+                                obok += tabela[poleY][poleX-1] + tabela[poleY-1][poleX-1] + tabela[poleY-1][poleX] + tabela[poleY-1][poleX+1] + tabela[poleY][poleX+1]
+                              //  console.log("liczs xmax")
+                                if (obok==0) {
+                                    setTimeout(function() {
+                                        poka(poleX-1, poleY)
+                                        poka(poleX-1, poleY-1)
+                                        poka(poleX, poleY-1)
+                                        poka(poleX+1, poleY-1)
+                                        poka(poleX+1, poleY)
+                                    },1)
+                                }
+                            }
+                            //obsługa konórek w środku
+                            else {
+                                obok += tabela[poleY-1][poleX] + tabela[poleY-1][poleX+1] + tabela[poleY][poleX+1] + tabela[poleY+1][poleX+1] + tabela[poleY+1][poleX] + tabela[poleY+1][poleX-1] + tabela[poleY][poleX-1] + tabela[poleY-1][poleX-1]
+                               // console.log("licz wszystko")
+                                if (obok==0) {
+                                    setTimeout(function() {
+                                        poka(poleX, poleY-1)
+                                        poka(poleX+1, poleY-1)
+                                        poka(poleX+1, poleY)
+                                        poka(poleX+1, poleY+1)
+                                        poka(poleX, poleY+1)
+                                        poka(poleX-1, poleY+1)
+                                        poka(poleX-1, poleY)
+                                        poka(poleX-1, poleY-1)
+                                    },1)
+                                }
+                            }
+                            if (obok!=0) {this.innerHTML = obok}
+                            this.classList.add("numer" +obok)
+                            }
+                        }
+                    }
+                    pole.oncontextmenu = function(event) {
+                        event.preventDefault()
+                        var poleX = parseInt(this.style.left) / 20
+                        var poleY = parseInt(this.style.top) / 20
+                        if (this.style.background=="") {
+                            this.style.background = "url(img/flaga2.png) center center / cover no-repeat"
+                            if (tabela[poleY][poleX]==1) {
+                                wygrana++
+                            }
+                            flagi++
+                            var liczBomb = document.getElementById("pozBomb-licznik").innerHTML
+                            liczBomb--
+                            document.getElementById("pozBomb-licznik").innerHTML = liczBomb
+                        }
+                        else if (this.style.background.includes("url(\"img/flaga2.png\")")) {
+                            this.style.background = "url(img/pyt2.png) center center / cover no-repeat"
+                            if (tabela[poleY][poleX]==1) {
+                                wygrana--
+                            }
+                            flagi--
+                            var liczBomb = document.getElementById("pozBomb-licznik").innerHTML
+                            liczBomb++
+                            document.getElementById("pozBomb-licznik").innerHTML = liczBomb
+                        }
+                        else if (this.style.background.includes("url(\"img/pyt2.png\")")) {
+                            this.style.background = ""
+                            this.style.backgroundColor = "#c0c0c0"
+                        }
+                        if (wygrana==bomb&&flagi==bomb) {
+                            wys=parseInt(wys)
+                            szer=parseInt(szer)
+                            var wynik = document.createElement("div")
+                            wynik.id="wynik"
+                            var Wczas = document.getElementById("czas").innerHTML
+                            var ciasteczka = document.cookie.split(";")
+                            var wymTab=[]
+                            ciasteczka.forEach(element => {
+                                if (element.includes("wymiary="))
+                                    {wymTab=element.replace("wymiary=","").split("x")}
+                            });
+                            if (wymTab[0]==wys && wymTab[1]==szer) {
+                                document.cookie = "wynik"+ciasteczka.length+"="+Wczas+"; path=/"
+                            }
+                            else {
+                                for (let i=2;i<ciasteczka.length; i++){
+                                    document.cookie = "wynik"+i+"= ; expires = Thu, 01 Jan 1970 00:00:00 GMT; path=/"
+                                }
+                                document.cookie = "wymiary="+wys+"x"+szer
+                                document.cookie = "wynik1="+Wczas+"; path=/"
+                                /*if (document.getElementById("wynik")!= null) {
+                                    document.getElementById("wynik").remove()
+                                    console.log("usuwamy",document.getElementById("wynik"))
+                                }*/
+                            }
+                            ciasteczka = document.cookie.split(";")
+                            var tytulWyn = document.createElement("span")
+                            tytulWyn.innerHTML="wymiary: "+wymTab.join("x")
+                            wynik.appendChild(tytulWyn)
+                            for (let i=1; i<=ciasteczka.length-1; i++) {
+                                let div = document.createElement("div")
+                                div.innerHTML = ciasteczka[i].replace("wynik","").replace("="," - ")
+                                wynik.appendChild(div)
+                            }
+                            
+                            clearInterval(sekundnik)
+                            document.body.appendChild(wynik);
+                        }
+                    }
+
+					saper.appendChild(pole)
+				}
+			}
+
+			
+			document.body.appendChild(saper)
+        }
+        //Div z contentem wszystko
+        var menu = document.createElement("div");
+        menu.id = "menu";
+        //inputy i ich zawartosc
+        var wys = document.createElement("div")
+        wys.append("Wysokość:")
+        var inwys = document.createElement("input")
+        inwys.setAttribute("type", "text")
+        wys.appendChild(inwys)
+
+        var szer = document.createElement("div")
+        szer.append("Szerokość:")
+        var inszer = document.createElement("input")
+        inszer.setAttribute("type", "text")
+        szer.appendChild(inszer)
+
+        var bomb = document.createElement("div")
+        bomb.append("Bomby:")
+        var inbomb = document.createElement("input")
+        inbomb.setAttribute("type", "text")
+        bomb.appendChild(inbomb)
+
+
+        //button start
+        var button = document.createElement("button");
+        button.innerHTML = "start";
+        var p = document.createElement("p")
+        p.id = "czas"
+        var sek = 0
+        var liczy = false
+        button.onclick = function () {
+            
+            if (inwys.value == "" || inszer.value == "" || inbomb.value == "" || inbomb.value > inwys.value*inszer.value || inbomb.value==0) {
+                alert("no chyba nie")
+            }
+            else if(!liczy) {
+				plansza(inwys.value, inszer.value, inbomb.value)
+                this.innerHTML = "reset"
+                document.getElementById("czas").innerHTML = "Czas: " + sek + " s"
+                sekundnik = setInterval(function () {
+                    sek++
+                    document.getElementById("czas").innerHTML = "Czas: " + sek + " s"
+                }, 1000)
+                var licznik = document.createElement("div")
+                licznik.id = "licznik"
+                
+                var tekst = document.createElement("span")
+                tekst.innerHTML="pozostałe bomby:"
+                tekst.id="tekst-licznik"
+                var pozBomb = document.createElement("span")
+                pozBomb.id="pozBomb-licznik"
+                pozBomb.innerHTML = inbomb.value
+
+                licznik.appendChild(tekst)
+                licznik.appendChild(pozBomb)
+                document.body.appendChild(licznik)
+                liczy = true
+            } else if (liczy) {
+                liczy = false
+                sek = 0
+                this.innerHTML = "start"
+                document.getElementById("czas").innerHTML = ""
+                clearInterval(sekundnik)
+                document.getElementById("saper").remove()
+                document.getElementById("licznik").remove()
+            }
+        }
+        inwys.oninput= function () {
+            var that = this
+            setTimeout(function () {
+                if (isNaN(that.value)) {
+                    that.value = ""
+                }
+            }, 1000)
+        }
+        inszer.oninput = function () {
+            var that = this
+            setTimeout(function () {
+                if (isNaN(that.value)) {
+                    that.value = ""
+                }
+            }, 1000)
+        }
+        inbomb.oninput = function () {
+            var that = this
+            setTimeout(function () {
+                if (isNaN(that.value)) {
+                    that.value = ""
+                }
+            }, 1000)
+        }
+        // oninput, onkeydown, onkeypress, onkeyup
+
+        menu.appendChild(wys);
+        menu.appendChild(szer);
+        menu.appendChild(bomb);
+        menu.appendChild(button);
+        menu.appendChild(p);
+        document.body.appendChild(menu);
+    </script>
+</body>
+
+</html>

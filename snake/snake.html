@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            background-color:aquamarine;
+            overflow:hidden;
+        }
+        #plansza {
+            border: 2px solid black;
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color:white;
+        }
+        #tekst{
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 20px;
+            text-align: center;
+        }
+        #elementy {
+            display:none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="elementy">
+        <img id="glowa-weza-dol"src="obrazki/glowa-weza-dol.png">
+        <img id="glowa-weza-gora"src="obrazki/glowa-weza-gora.png">
+        <img id="glowa-weza-lewo"src="obrazki/glowa-weza-lewo.png">
+        <img id="glowa-weza-prawo"src="obrazki/glowa-weza-prawo.png">
+        <img id="cialo-pionowo"src="obrazki/cialo-pionowo.png">
+        <img id="cialo-poziomo"src="obrazki/cialo-poziomo.png">
+        <img id="cialo-lewo-dol"src="obrazki/cialo-lewo-dol.png">
+        <img id="cialo-lewo-gora"src="obrazki/cialo-lewo-gora.png">
+        <img id="cialo-prawo-dol"src="obrazki/cialo-prawo-dol.png">
+        <img id="cialo-prawo-gora"src="obrazki/cialo-prawo-gora.png">
+        <img id="jablko"src="obrazki/jablko.png">
+        <img id="ogon-dol"src="obrazki/ogon-dol.png">
+        <img id="ogon-gora"src="obrazki/ogon-gora.png">
+        <img id="ogon-prawo"src="obrazki/ogon-prawo.png">
+        <img id="ogon-lewo"src="obrazki/ogon-lewo.png">
+    </div>
+    <div id="tekst">Naciśnij dowolny klawisz aby rozpocząć zabawę! <br>(ruch węża odbywa się za pomocą strzałek)</div>
+    <canvas id="plansza" width="700" height="700"></canvas>
+    <script>
+        let owoc = ""
+        let x = 10
+        let y = 10
+        let zjedzono=false
+        let kierunek=""
+        let staryKierunek = ""
+        let ruszaSie = true
+        let zmianaKierunku = true
+        let przegrana=false
+        let wonsz = [
+            {
+                x:10,
+                y:10
+            }
+        ]
+        function startGierki() {
+            rysujWeza()
+            console.log(x,y)
+            losujOwoca()
+        }
+        function resetGierki() {
+            x=10
+            y=10
+            rysujWeza(false)
+            //clearInterval(letsPlay)
+            owocXY = owoc.split(";")
+            czyscKwadrat(owocXY[0],owocXY[1])
+                wonsz = [
+                {
+                    x:10,
+                    y:10
+                }
+            ]
+            kierunek=""
+            staryKierunek = ""
+            przegrana=false
+            losujOwoca()
+        }
+        function rysujKwadrat(x, y, obrazek) {
+            let c = document.getElementById("plansza");
+            let kloc = c.getContext("2d")
+            if (obrazek=="glowa-weza-"){
+                obrazek="glowa-weza-prawo"
+            }
+            let img = document.getElementById(obrazek)
+            kloc.drawImage(img, x*20, y*20)
+        }
+        function czyscKwadrat(x, y) {
+            let c = document.getElementById("plansza");
+            let kloc = c.getContext("2d")
+            kloc.beginPath();
+            kloc.fillStyle = "#FFFFFF"
+            kloc.fillRect(x * 20, y * 20, 20, 20)
+            kloc.stroke();
+        }
+        function losujOwoca () {
+            let a=Math.floor(Math.random()*35)
+            let b=Math.floor(Math.random()*35)
+            rysujKwadrat(a, b, "jablko")
+            owoc=a+";"+b
+        }
+        function rysujWeza(rysowac) {
+            if (rysowac) {
+                for (i=0; i<wonsz.length; i++) {
+                    if (i==0){
+                        rysujKwadrat(wonsz[i].x, wonsz[i].y, "glowa-weza-"+kierunek)
+                        var kierunekOgona=kierunek
+                    }
+                    else if (i==wonsz.length-1 && wonsz.length>=2) {
+                        let poziomo=wonsz[i-1].x - wonsz[i].x
+                        let pionowo=wonsz[i-1].y - wonsz[i].y
+                        if (poziomo==1) {
+                            kierunekOgona="prawo"
+                        }
+                        else if (poziomo==-1){
+                            kierunekOgona="lewo"
+                        }
+                        if (pionowo==1) {
+                            kierunekOgona="dol"
+                        }
+                        else if (pionowo==-1){
+                            kierunekOgona="gora"
+                        }
+                        rysujKwadrat(wonsz[i].x, wonsz[i].y, "ogon-"+kierunekOgona)
+                    }
+                    else {
+                        let poziomo1=wonsz[i-1].x - wonsz[i].x
+                        let pionowo1=wonsz[i-1].y - wonsz[i].y
+                        let poziomo2=wonsz[i].x - wonsz[i+1].x
+                        let pionowo2=wonsz[i].y - wonsz[i+1].y
+                        if (poziomo1+poziomo2==2||poziomo1+poziomo2==-2) {
+                            rysujKwadrat(wonsz[i].x, wonsz[i].y, "cialo-poziomo")
+                        }
+                        else if (pionowo1+pionowo2==2|| pionowo1+pionowo2==-2) {
+                            rysujKwadrat(wonsz[i].x, wonsz[i].y, "cialo-pionowo")
+                        }
+                        else if ((pionowo1==1&&poziomo1==0&&pionowo2==0&&poziomo2==1) ||
+                                pionowo1==0&&poziomo1==-1&&pionowo2==-1&&poziomo2==0){
+                            rysujKwadrat(wonsz[i].x, wonsz[i].y, "cialo-lewo-dol")
+                        }
+                        else if ((pionowo1==-1&&poziomo1==0&&pionowo2==0&&poziomo2==1) ||
+                                pionowo1==0&&poziomo1==-1&&pionowo2==1&&poziomo2==0){
+                            rysujKwadrat(wonsz[i].x, wonsz[i].y, "cialo-lewo-gora")
+                        }
+                        else if ((pionowo1==1&&poziomo1==0&&pionowo2==0&&poziomo2==-1) ||
+                                pionowo1==0&&poziomo1==1&&pionowo2==-1&&poziomo2==0){
+                            rysujKwadrat(wonsz[i].x, wonsz[i].y, "cialo-prawo-dol")
+                        }
+                        else if ((pionowo1==-1&&poziomo1==0&&pionowo2==0&&poziomo2==-1) ||
+                                pionowo1==0&&poziomo1==1&&pionowo2==1&&poziomo2==0){
+                            rysujKwadrat(wonsz[i].x, wonsz[i].y, "cialo-prawo-gora")
+                        }
+                    }
+                }
+            }
+            else {
+                wonsz.forEach(e => {
+                    czyscKwadrat(e.x, e.y)
+                });
+            }
+        }
+        function dodajWeza(x,y) {
+            let obj = {x:x,y:y}
+            let dł=wonsz.length
+            wonsz.unshift(obj)
+            let element = wonsz.pop();
+            if (zjedzono) {
+                wonsz.push(element)
+                zjedzono=false
+            }
+        }
+        function kierunekRuchu(e) {
+            if (staryKierunek != kierunek) {
+                staryKierunek = kierunek
+            }
+            if (zmianaKierunku) {
+                switch (e.keyCode) {
+                    case 37:
+                        if (staryKierunek != "prawo") {
+                            kierunek="lewo"
+                        }
+                        break;
+                    case 38:
+                        if (staryKierunek != "dol") {
+                            kierunek="gora"
+                        }
+                        break;
+                    case 39:
+                        if (staryKierunek != "lewo") {
+                            kierunek="prawo"
+                        }
+                        break;
+                    case 40:
+                        if (staryKierunek != "gora") {
+                            kierunek="dol"
+                        }
+                        break;
+                }
+                zmianaKierunku = false
+            }
+        }
+        function zmianaPozWeza(kierunek) {
+            switch (kierunek){
+                case "lewo":
+                        x--
+                    break;
+                case "gora":
+                        y--
+                    break;
+                case "prawo":
+                        x++
+                    break;
+                case "dol":
+                        y++
+                    break;
+            }
+        }
+        function czyZjadlOwoca(){
+            owocXY = owoc.split(";")
+            if (x==owocXY[0]&&y==owocXY[1])
+            {
+                console.log("owocek")
+                zjedzono=true
+                losujOwoca()
+            }
+        }
+        function czySieWyjebal() {
+            //console.log(wonsz, x, y)
+            for (let i=1; i<wonsz.length;i++) {
+                if (wonsz[i].x==x&&wonsz[i].y==y) {
+                    przegrana=true
+                }
+            }
+            if(x<0||x>=35||y<0||y>=35) {
+                przegrana=true
+            }
+            if (przegrana) {
+                alert("Przegrana! Spróbuj jeszcze raz!")
+                resetGierki()
+            }
+        }
+        function rysujeOwocaJeszczeRaz() {
+            owocXY = owoc.split(";")
+            rysujKwadrat(owocXY[0], owocXY[1], "jablko")
+        }
+        startGierki()
+        document.onkeydown = function(e) {
+            kierunekRuchu(e)
+            if (ruszaSie){
+                var letsPlay = setInterval(function() {
+                    zmianaPozWeza(kierunek)
+                    czyZjadlOwoca()
+                    rysujWeza(false)
+                    dodajWeza(x,y)
+                    rysujWeza(true)
+                    czySieWyjebal()
+                    rysujeOwocaJeszczeRaz()
+                    zmianaKierunku=true
+                },150)
+                ruszaSie=false
+            }
+        }
+    </script>
+</body>
+
+</html>

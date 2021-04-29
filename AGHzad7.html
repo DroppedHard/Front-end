@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<script>/*
+    var tab1=[]
+    var tab2=[]
+    var liczba = 3
+        for (let i=0; i<liczba; i++) {
+            tab1[i] = i+1;
+        }
+        console.log(tab1)
+    }*/
+    var ileLiczb=prompt("ile",3)-1;
+    var P = [] 
+    var tab = [] //ma wszystkie kombinacje
+    var krok = 0;
+    var znaleziono = false
+    /*while (silnia(ileLiczb) >= krok) {
+        let x = 0
+        console.log(P)
+        if (krok == 0) {
+            tab[0] = P
+        }
+        else if (krok % 2 == 1) {
+            x = P[0]
+            P[0] = P[1]
+            P[1] = x
+
+            tab[krok] = P
+        }
+        else {
+            tab[krok] = P
+        }
+        krok++
+    }*/
+        for (let i = 0; i <= ileLiczb; i++) {
+            P[i]=i+1
+        }
+        perm(ileLiczb)
+        console.log("xd?")
+    /*while (true) {
+        if (znaleziono == true) {break}
+        else {
+            if (ileLiczb%2==0) {ilelLiczb++}
+            else {ileLiczb=ileLiczb+2}
+            for (let i = 0; i <= ileLiczb; i++) {
+                P[i]=i+1
+            }
+            console.log(ileLiczb, "liczby")
+        }
+    }*/
+function perm(k) {
+    let x = 0
+    let suma = 0
+    var zgadzaSie=0
+    if (k == 0) {
+        //console.log(P, "to wchodzi ----------------------")
+        for (var i = 0; i <= P.length; i++) {
+            for (let j = 0; j < i; j++) {
+                //console.log(suma, j, i, P[j], zgadzaSie, ileLiczb, "dane przed")
+                suma = suma + P[j]
+                //console.log(suma, j, i, P[j], zgadzaSie, ileLiczb, "dane po")
+            }
+
+            if (suma % i == 0) {
+                zgadzaSie += 1
+                if (ileLiczb-zgadzaSie<1) {console.log(zgadzaSie-1, ileLiczb)}
+                //console.log(zgadzaSie, ileLiczb, "Zgadza sie?")
+                suma = 0
+                if (zgadzaSie-1 == ileLiczb) {
+                    console.log(P, "to jest to")
+                    //znaleziono = true
+                    //break
+                }
+            } else { suma=0}
+        }
+    }
+    else
+    for (let i=0;i<=k;i++) {
+        //console.log(k)
+        //swap P[i]↔P[k]
+        //console.log(a, P[i], "a = P[i]")
+        var a = P[i]
+        //console.log(k, "k")
+        P[i]=P[k]
+        P[k]=a
+        perm(k-1)
+        //swap P[i]↔P[k]
+        var b = P[i]
+        P[i]=P[k]
+        P[k]=b
+    }
+    
+}
+function silnia(n) {
+if ((n == 0) || (n == 1))
+  {return 1}
+else {
+  var result = (n * silnia(n-1) );
+  return result
+        }
+    }
+/*
+var arr = [1,2,3];
+    do {
+        copy(arr.begin(), arr.end(), ostream_iterator<int>(cout, " "));
+        cout << "\n";
+    } while(next_permutation(arr.begin(), arr.end()));
+    return 0;
+  */  
+</script>
+<body>
+    
+</body>
+</html>
